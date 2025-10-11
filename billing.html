@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Sri Ram Physico Clinic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
+                <li class="nav-item"><a class="nav-link" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
+                <li class="nav-item"><a class="nav-link active" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
+                <li class="nav-item"><a class="nav-link" href="service.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content-wrapper">
+            <header class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
+                    <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
+                </div>
+                <button class="btn btn-outline-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </header>
+
+            <main class="content-area p-4">
+                <div class="dashboard-card p-4">
+                    <ul class="nav nav-pills mb-4">
+                        <li class="nav-item"><a class="nav-link active" href="#" id="pending-tab">Pending Bills</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" id="paid-tab">Today's Payments</a></li>
+                    </ul>
+
+                    <div id="pending-bills-table">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light"><tr><th>Bill ID</th><th>Patient Name</th><th>Visit Date</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <tr><td>B-045</td><td>Rina Singh</td><td>2025-10-11</td><td><a href="#" class="btn btn-sm btn-primary">Open Bill</a></td></tr>
+                                    <tr><td>B-046</td><td>Arun Mehta</td><td>2025-10-11</td><td><a href="#" class="btn btn-sm btn-primary">Open Bill</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="paid-bills-table" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 5%;"></th>
+                                        <th>Bill ID</th>
+                                        <th>Patient Name</th>
+                                        <th>Visit Date</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bill-toggler" data-target-id="bill-details-B044">
+                                        <td><i class="bi bi-caret-right-fill expand-icon"></i></td>
+                                        <td>B-044</td>
+                                        <td>Anil Kumar</td>
+                                        <td>2025-10-11</td>
+                                        <td>₹ 800</td>
+                                    </tr>
+                                    <tr id="bill-details-B044" class="bill-details-row">
+                                        <td colspan="5" class="p-3">
+                                            <strong>Treatments:</strong>
+                                            <ul><li>Back Pain Consultation (₹ 800)</li></ul>
+                                            <strong>Payment Method:</strong> Cash
+                                        </td>
+                                    </tr>
+                                    <tr class="bill-toggler" data-target-id="bill-details-B041">
+                                        <td><i class="bi bi-caret-right-fill expand-icon"></i></td>
+                                        <td>B-041</td>
+                                        <td>Deepak Kumar</td>
+                                        <td>2025-10-11</td>
+                                        <td>₹ 1,500</td>
+                                    </tr>
+                                    <tr id="bill-details-B041" class="bill-details-row">
+                                        <td colspan="5" class="p-3">
+                                            <strong>Treatments:</strong>
+                                            <ul><li>Knee Rehabilitation (₹ 1,500)</li></ul>
+                                            <strong>Payment Method:</strong> UPI
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const pendingTab = document.getElementById('pending-tab');
+        const paidTab = document.getElementById('paid-tab');
+        
+        const pendingTable = document.getElementById('pending-bills-table');
+        const paidTable = document.getElementById('paid-bills-table');
+
+        // Show Pending Bills table by default
+        pendingTab.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent page reload
+            
+            // Update active state of tabs
+            pendingTab.classList.add('active');
+            paidTab.classList.remove('active');
+            
+            // Show/hide tables
+            pendingTable.style.display = 'block';
+            paidTable.style.display = 'none';
+        });
+
+        // Show Paid Bills table
+        paidTab.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            // Update active state of tabs
+            paidTab.classList.add('active');
+            pendingTab.classList.remove('active');
+
+            // Show/hide tables
+            paidTable.style.display = 'block';
+            pendingTable.style.display = 'none';
+        });
+    });
+    </script>
+</body>
+</html>
