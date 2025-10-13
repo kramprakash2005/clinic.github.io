@@ -1,0 +1,6 @@
+mkdir sri-ram-clinic-backend
+cd sri-ram-clinic-backend
+python -m venv venv
+venv\Scripts\activate
+pip install "fastapi[all]" motor
+mkdir app && mkdir app\routes && type nul > app\__init__.py && type nul > app\main.py && type nul > app\db.py && type nul > app\models.py && type nul > app\utils.py && type nul > app\routes\__init__.py && type nul > app\routes\patients.py && type nul > app\routes\services.py

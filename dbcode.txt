@@ -1,0 +1,31 @@
+use sriRamPhysicoClinic
+
+
+db.createCollection("patients")
+db.createCollection("visits")
+db.createCollection("bills")
+db.createCollection("treatments")
+db.createCollection("counters")
+
+
+db.counters.insertMany([
+  {
+    "_id": "patients",
+    "sequence_value": 0
+  },
+  {
+    "_id": "visits",
+    "sequence_value": 0
+  },
+  {
+    "_id": "bills",
+    "sequence_value": 0
+  }
+])
+
+
+db.treatments.insertOne({
+  "name": "Interferential Therapy (IFT)",
+  "cost": 150,
+  "duration": "15 mins"
+})

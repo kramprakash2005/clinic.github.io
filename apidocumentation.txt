@@ -1,0 +1,36 @@
+Patients (/patients)
+[ ] POST /patients: Create a new patient.
+
+[ ] GET /patients: Get a list of all patients (for the main patient list page).
+
+[ ] GET /patients/{patient_id}: Get the details of a single patient (for the "View Patient" page).
+
+[ ] PUT /patients/{patient_id}: Update an existing patient's details.
+
+[ ] DELETE /patients/{patient_id}: Delete a patient.
+
+Services (/services)
+[ ] POST /services: Create a new service.
+
+[ ] GET /services: Get a list of all available services.
+
+[ ] PUT /services/{service_id}: Update an existing service.
+
+[ ] DELETE /services/{service_id}: Delete a service.
+
+Visits (/visits)
+[ ] POST /visits: Create a new visit for a patient.
+
+[ ] GET /visits/today: Get a list of all visits for the current day (for the "Today's Queue").
+
+Billing (/bills)
+[ ] GET /bills/pending: Get a list of all unpaid bills.
+
+[ ] GET /bills/today: Get a list of all bills paid today.
+
+[ ] GET /bills/{bill_id}: Get the details of a single bill.
+
+[ ] PUT /bills/{bill_id}: Update a bill (add treatments, mark as paid).
+
+Reports (/reports)
+[ ] GET /reports/summary: A single, powerful endpoint that takes a start_date and end_date and returns the data for the summary cards and all three report tables (Payments, Services, New Patients).
