@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Today's Visits - Sri Ram Physico Clinic</title>
+    <!-- CSS Links -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
@@ -11,18 +12,21 @@
 </head>
 <body>
     <div class="d-flex">
+        <!-- Side Navigation Bar -->
         <nav class="sidebar">
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
                 <li class="nav-item"><a class="nav-link active" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
                 <li class="nav-item"><a class="nav-link" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
-                <li class="nav-item"><a class="nav-link" href="service.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-gear-fill"></i> Services</a></li>
                 <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
             </ul>
         </nav>
 
+        <!-- Main Content Wrapper -->
         <div class="main-content-wrapper">
+            <!-- Top Bar -->
             <header class="top-bar d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
@@ -33,15 +37,18 @@
                 </button>
             </header>
 
+            <!-- Main Content Area -->
             <main class="content-area p-4">
                 <div class="dashboard-card p-4">
+                    <!-- Top Action Bar -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0">Today's Visits (October 11, 2025)</h4>
+                        <h4 class="mb-0">Today's Visits</h4>
                         <a href="add-visit-search.html" class="btn btn-primary">
                             <i class="bi bi-plus-lg"></i> Create New Visit
                         </a>
                     </div>
 
+                    <!-- Today's Visits Table -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -51,22 +58,8 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Rina Singh</td>
-                                    <td>Ankle Sprain</td>
-                                    <td><a href="billing.html" class="btn btn-sm btn-outline-primary">Open Bill</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Deepak Kumar</td>
-                                    <td>Shoulder Pain</td>
-                                    <td><a href="billing.html" class="btn btn-sm btn-outline-primary">Open Bill</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Anil Kumar</td>
-                                    <td>Follow-up</td>
-                                    <td><a href="billing.html" class="btn btn-sm btn-outline-secondary">View Bill</a></td>
-                                </tr>
+                            <tbody id="visits-table-body">
+                                <!-- Data will be loaded here by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -76,5 +69,43 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Internal JavaScript for Visits Page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const visitsTableBody = document.getElementById('visits-table-body');
+            const apiUrl = 'http://127.0.0.1:8000/visits/today';
+
+            async function fetchAndRenderVisits() {
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error('Failed to fetch visits.');
+                    const visits = await response.json();
+
+                    visitsTableBody.innerHTML = ''; // Clear existing rows
+                    if (visits.length === 0) {
+                        visitsTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No visits have been created for today.</td></tr>';
+                        return;
+                    }
+
+                    visits.forEach(visit => {
+                        const row = `
+                            <tr>
+                                <td>${visit.patient.fullName}</td>
+                                <td>${visit.problem}</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary">Open Bill</a></td>
+                            </tr>`;
+                        visitsTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    visitsTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Failed to load data. Please ensure the backend is running.</td></tr>';
+                }
+            }
+
+            // Initial load of data
+            fetchAndRenderVisits();
+        });
+    </script>
 </body>
 </html>
