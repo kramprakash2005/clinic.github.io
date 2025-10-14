@@ -40,7 +40,6 @@
             <!-- Main Content Area -->
             <main class="content-area p-4">
                 <div class="dashboard-card p-4">
-                    <!-- Top Action Bar -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="mb-0">Today's Visits</h4>
                         <a href="add-visit-search.html" class="btn btn-primary">
@@ -48,17 +47,16 @@
                         </a>
                     </div>
 
-                    <!-- Today's Visits Table -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Patient Name</th>
+                                    <th>Time</th>
                                     <th>Problem</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="visits-table-body">
+                            <tbody id="visits-tbody">
                                 <!-- Data will be loaded here by JavaScript -->
                             </tbody>
                         </table>
@@ -73,7 +71,7 @@
     <!-- Internal JavaScript for Visits Page -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const visitsTableBody = document.getElementById('visits-table-body');
+            const visitsTbody = document.getElementById('visits-tbody');
             const apiUrl = 'http://127.0.0.1:8000/visits/today';
 
             async function fetchAndRenderVisits() {
@@ -82,30 +80,32 @@
                     if (!response.ok) throw new Error('Failed to fetch visits.');
                     const visits = await response.json();
 
-                    visitsTableBody.innerHTML = ''; // Clear existing rows
+                    visitsTbody.innerHTML = '';
                     if (visits.length === 0) {
-                        visitsTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No visits have been created for today.</td></tr>';
+                        visitsTbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No visits have been created for today.</td></tr>';
                         return;
                     }
 
                     visits.forEach(visit => {
+                        // Directly use the pre-formatted time string from the API
                         const row = `
                             <tr>
                                 <td>${visit.patient.fullName}</td>
+                                <td>${visit.entryDate}</td>
                                 <td>${visit.problem}</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-primary">Open Bill</a></td>
                             </tr>`;
-                        visitsTableBody.insertAdjacentHTML('beforeend', row);
+                        visitsTbody.insertAdjacentHTML('beforeend', row);
                     });
                 } catch (error) {
-                    console.error('Fetch error:', error);
-                    visitsTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Failed to load data. Please ensure the backend is running.</td></tr>';
+                    console.error('Error fetching visits:', error);
+                    visitsTbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Failed to load data.</td></tr>';
                 }
             }
 
-            // Initial load of data
+            // Initial Load
             fetchAndRenderVisits();
         });
     </script>
 </body>
 </html>
+

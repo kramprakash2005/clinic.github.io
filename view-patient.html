@@ -32,14 +32,11 @@
                     <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
                     <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
                 </div>
-                <button class="btn btn-outline-secondary">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </button>
+                <button class="btn btn-outline-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
             </header>
 
             <!-- Main Content Area -->
             <main class="content-area p-4">
-                <!-- Action Buttons -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="mb-0">Patient Profile</h4>
                     <div>
@@ -76,24 +73,22 @@
                     <!-- Right Column: Patient History -->
                     <div class="col-lg-7">
                         <div class="dashboard-card p-4">
-                            <!-- Tab Navigation -->
                             <ul class="nav nav-tabs" id="historyTabs" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits-history" type="button">Visit History</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing-history" type="button">Billing History</button>
-                                </li>
+                                <li class="nav-item" role="presentation"><button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits-history" type="button">Visit History</button></li>
+                                <li class="nav-item" role="presentation"><button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing-history" type="button">Billing History</button></li>
                             </ul>
-                            <!-- Tab Content -->
                             <div class="tab-content pt-3" id="historyTabsContent">
-                                <!-- Visit History Pane -->
                                 <div class="tab-pane fade show active" id="visits-history" role="tabpanel">
-                                    <p class="text-muted">Visit history will be shown here once the Visits module is complete.</p>
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-light"><tr><th>Visit ID</th><th>Date</th><th>Problem</th></tr></thead>
+                                        <tbody id="visit-history-tbody"></tbody>
+                                    </table>
                                 </div>
-                                <!-- Billing History Pane -->
                                 <div class="tab-pane fade" id="billing-history" role="tabpanel">
-                                    <p class="text-muted">Billing history will be shown here once the Billing module is complete.</p>
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-light"><tr><th>Bill ID</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                                        <tbody id="billing-history-tbody"></tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -105,48 +100,99 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Internal JavaScript for View Patient Page -->
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            const apiUrl = 'http://127.0.0.1:8000/patients';
+            const patientsApiUrl = 'http://127.0.0.1:8000/patients';
+            const visitsApiUrl = 'http://127.0.0.1:8000/visits';
+            const billingApiUrl = 'http://127.0.0.1:8000/billing';
 
-            // Get the patient ID from the URL
             const urlParams = new URLSearchParams(window.location.search);
             const patientId = urlParams.get('id');
 
             if (!patientId) {
-                alert('No patient ID found. Redirecting to patient list.');
-                window.location.href = './patients.html'; // CORRECTED
+                alert('No patient ID found.');
+                window.location.href = './patients.html';
                 return;
             }
             
-            // Set the Edit button link
             document.getElementById('edit-details-btn').href = `edit-patient.html?id=${patientId}`;
 
-            // Function to format dates
             function formatDate(isoString) {
                 if (!isoString) return 'N/A';
-                return new Date(isoString).toLocaleDateString('en-GB'); // DD/MM/YYYY format
+                return new Date(isoString).toLocaleDateString('en-CA'); // YYYY-MM-DD
             }
 
-            // Fetch patient data and populate the page
-            try {
-                const response = await fetch(`${apiUrl}/${patientId}`);
-                if (!response.ok) throw new Error('Patient not found.');
-                const patient = await response.json();
+            // --- Fetch and Render Patient Details ---
+            async function fetchPatientDetails() {
+                try {
+                    const response = await fetch(`${patientsApiUrl}/${patientId}`);
+                    if (!response.ok) throw new Error('Patient not found.');
+                    const patient = await response.json();
 
-                document.getElementById('patient-name').textContent = patient.fullName;
-                document.getElementById('patient-readable-id').textContent = `Patient ID: ${patient.patient_id}`;
-                document.getElementById('patient-contact').textContent = `📞 ${patient.contactNumber}`;
-                document.getElementById('patient-address').textContent = `🏠 ${patient.address || 'Not provided'}`;
-                document.getElementById('patient-gender').textContent = `Gender: ${patient.gender || 'Not provided'}`;
-                document.getElementById('patient-dob').textContent = `DOB: ${formatDate(patient.dob)}`;
-                document.getElementById('patient-history').textContent = patient.medicalHistory || 'No history provided.';
-
-            } catch (error) {
-                alert('Could not load patient data.');
-                document.getElementById('patient-name').textContent = 'Error';
+                    document.getElementById('patient-name').textContent = patient.fullName;
+                    document.getElementById('patient-readable-id').textContent = `Patient ID: ${patient.patient_id}`;
+                    document.getElementById('patient-contact').textContent = `📞 ${patient.contactNumber}`;
+                    document.getElementById('patient-address').textContent = `🏠 ${patient.address || 'Not provided'}`;
+                    document.getElementById('patient-gender').textContent = `Gender: ${patient.gender || 'Not provided'}`;
+                    document.getElementById('patient-dob').textContent = `DOB: ${formatDate(patient.dob)}`;
+                    document.getElementById('patient-history').textContent = patient.medicalHistory || 'No history provided.';
+                } catch (error) {
+                    alert('Could not load patient data.');
+                }
             }
+
+            // --- Fetch and Render Visit History ---
+            async function fetchVisitHistory() {
+                const tbody = document.getElementById('visit-history-tbody');
+                try {
+                    const response = await fetch(`${visitsApiUrl}/by-patient/${patientId}`);
+                    if (!response.ok) throw new Error('Could not fetch visit history.');
+                    const visits = await response.json();
+                    
+                    tbody.innerHTML = '';
+                    if (visits.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No visit history found.</td></tr>';
+                        return;
+                    }
+                    visits.forEach(visit => {
+                        tbody.innerHTML += `<tr><td>${visit.visit_id}</td><td>${formatDate(visit.entryDate)}</td><td>${visit.problem}</td></tr>`;
+                    });
+                } catch (error) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Failed to load history.</td></tr>';
+                }
+            }
+
+            // --- Fetch and Render Billing History ---
+            async function fetchBillingHistory() {
+                const tbody = document.getElementById('billing-history-tbody');
+                try {
+                    const response = await fetch(`${billingApiUrl}/by-patient/${patientId}`);
+                    if (!response.ok) throw new Error('Could not fetch billing history.');
+                    const bills = await response.json();
+                    
+                    tbody.innerHTML = '';
+                    if (bills.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No billing history found.</td></tr>';
+                        return;
+                    }
+                    bills.forEach(bill => {
+                        const statusClass = bill.paymentStatus === 'Paid' ? 'text-success' : 'text-danger';
+                        tbody.innerHTML += `<tr>
+                            <td>${bill.bill_id}</td>
+                            <td>${formatDate(bill.visit.entryDate)}</td>
+                            <td>₹ ${bill.totalAmount.toFixed(2)}</td>
+                            <td><span class="${statusClass}">${bill.paymentStatus}</span></td>
+                        </tr>`;
+                    });
+                } catch (error) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Failed to load history.</td></tr>';
+                }
+            }
+
+            // --- Initial Load ---
+            fetchPatientDetails();
+            fetchVisitHistory();
+            fetchBillingHistory();
         });
     </script>
 </body>
